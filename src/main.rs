@@ -14,7 +14,7 @@ async fn main() -> Result<(), autoscaling::Error> {
 
     let r = client
         .describe_auto_scaling_groups()
-        .auto_scaling_group_names(test)
+        .auto_scaling_group_names(test.clone())
         .send()
         .await?;
 
@@ -31,6 +31,37 @@ async fn main() -> Result<(), autoscaling::Error> {
                 .as_ref()
                 .unwrap(),
         )
+        .send()
+        .await?;
+
+    println!("{:?}", r);
+
+    let launch_configuration = r
+        .launch_configurations
+        .unwrap()
+        .clone()
+        .first()
+        .unwrap()
+        .clone();
+
+    println!("{:?}", launch_configuration);
+
+    //let r = client
+    //    .create_launch_configuration()
+    //    .launch_configuration_name("test3".to_string())
+    //    .image_id("ami-0223db08811f6fb2d".to_string())
+    //    .set_instance_type(launch_configuration.instance_type)
+    //    .set_key_name(launch_configuration.key_name)
+    //    .set_security_groups(launch_configuration.security_groups)
+    //    .send()
+    //    .await?;
+
+    //println!("{:?}", r);
+
+    let r = client
+        .update_auto_scaling_group()
+        .auto_scaling_group_name(test)
+        .launch_configuration_name("test2".to_string())
         .send()
         .await?;
 
